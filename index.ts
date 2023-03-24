@@ -461,3 +461,160 @@ class Person4<T> {
 }
 let a2 = new Person4<string>("어쩌구");
 a2.name; //any 타입이 되었넹
+
+//==============================================================================
+// array 자료에 붙일 수 있는 tuple type
+// 첫 자료는 무조건 string 두번째 자료는 무조건 boolean (위치고려 타입지정 가능)
+let 멍멍이: [string, boolean?]; // ?도 가능
+멍멍이 = ["dog", true];
+
+//
+function 함수19(...x: [number, string]) {
+  console.log(x);
+}
+
+let arr = [1, 2, 3];
+let arr2: [number, number, ...number[]] = [4, 5, ...arr];
+
+// 숙제1
+let arr3: [string, number, boolean] = ["동선고차", 4000, true];
+
+//숙제2
+
+let arr4: [string, number, ...boolean[]];
+
+// 숙제3
+function 함수20(...a: [string, boolean, ...(number | string)[]]) {}
+
+// 숙제4
+function sort(...a: (string | number)[]) {
+  let result: [string[], number[]] = [[], []];
+  a.forEach((a) => {
+    if (typeof a === "number") {
+      result[1].push(a);
+    } else {
+      result[0].push(a);
+    }
+  });
+  return result;
+}
+
+//=================================================================
+// 외부 파일 이용시 declare & 이상한 특징인 ambient module
+
+// .js에 있는 변수를 .ts에서 이용하고 싶다. => 그냥 index.html에 data.js script로 넣어주면 ts에서도 쓸 수 있어.
+// 근데 일단 ts에서는 에러를 내기때문에 declare 해주면 됨
+declare let a5: number;
+
+// ts -> ts는 import export 쓰면돼 근데 ts끼리는 ambient module(글로벌 모듈) 그래서 ex, improt 안해줘도 돼
+// 근데 ts파일을 글로벌 모듈로 쓰고싶지않고 로컬 모듈로 쓰고싶으면 그냥 그 파일에 export{} 이거 하나 아무데나 써주면됨
+// 근데 또 로컬모듈에서 갑자기 글로벌 변수를 만들고 싶어지면 declare global {} 안에 적으면됨
+declare global {
+  type Dog = string;
+}
+export {};
+
+//===========================================================================
+
+// implements 키워드
+// class 이름 우측에 implements를 쓰고 interface 이름을 쓰면
+
+//"이 class가 이 interface에 있는 속성을 다 들고있냐"
+
+//라고 확인이 가능합니다.
+
+//그래서 다 갖고 있으면 별말 안해주고
+
+//혹여나 빠진 속성이 있으면 에러로 알려줍니다.
+
+interface CarType {
+  model: string;
+  price: number;
+}
+
+class Car6 implements CarType {
+  model: string;
+  price: number = 1000;
+  constructor(a: string) {
+    this.model = a;
+  }
+}
+let 붕붕이 = new Car6("morning");
+
+//==================================================================
+
+// object 타입지정 한번에 하기
+// index signature
+interface StringOnly {
+  // [key: string]: String;
+  [key: string]: String | number;
+  age: "20"; // 이런것도 되고
+}
+
+let user10: StringOnly = {
+  name: "kim",
+  age: "20",
+  location: "seoul",
+};
+
+// 숙제1
+interface ObjType {
+  [key: string]: string | number;
+}
+let obj = {
+  model: "k5",
+  brand: "kia",
+  price: 6000,
+  year: 2030,
+  date: "6월",
+  percent: "5%",
+  dealer: "김차장",
+};
+
+// 숙제2
+
+interface ObjType2 {
+  "font-size": number;
+  [key: string]: number | ObjType2;
+}
+
+let obj2: ObjType2 = {
+  "font-size": 10,
+  secondary: {
+    "font-size": 12,
+    third: {
+      "font-size": 14,
+    },
+  },
+};
+
+//==========================================================
+// object 타입 변환기 만들기
+
+interface Person {
+  age: number;
+  name: string;
+}
+type PersonKeys = keyof Person; // personKeys는 type이 'age' | 'name' 인 union type
+
+//
+type Car7 = {
+  color: boolean;
+  model: boolean;
+  price: boolean | number;
+};
+
+// 일종의 조건문 그냥 외워서 써라. MyType에 key가 있으면 string으로 지정해주세요.
+type TypeChanger<MyType> = {
+  [key in keyof MyType]: string;
+};
+
+type 새로운타입 = TypeChanger<Car7>;
+
+// 조건문으로 타입만들기 & infer
+// type if문은 삼항연산자로
+// 조건식은 extends 써야됨. extends는 포함하고 있는지
+// T extends string => T가 string을 가지고있는지 ?
+
+// infer 키워드
+// 타입을 왼쪽에서 뽑아주세요.
